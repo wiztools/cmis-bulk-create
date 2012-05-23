@@ -44,7 +44,7 @@ public class CmisBulkCreateMain {
         
         final CmisProperties props = new CmisProperties(new File(args[0]));
         if(!props.isValid()) {
-            System.err.println("All required properties not found.");
+            System.err.println("Verify if your configuration file has all required properties!");
             printHelp(System.err);
             System.exit(2);
         }
