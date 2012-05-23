@@ -83,7 +83,7 @@ public class CmisBulkCreateMain {
                 Map<String, Object> docProps = new HashMap<String, Object>();
                 docProps.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document");
                 docProps.put(PropertyIds.NAME, fileName);
-                byte[] buf = ("document-" + i + "." + j).getBytes(Charsets.UTF_8);
+                byte[] buf = ("document-" + i + "." + j + "\n").getBytes(Charsets.UTF_8);
                 ByteArrayInputStream bais = new ByteArrayInputStream(buf);
                 ContentStream cs = session.getObjectFactory().createContentStream(
                         fileName, buf.length, "text/plain; charset=UTF-8", bais);
