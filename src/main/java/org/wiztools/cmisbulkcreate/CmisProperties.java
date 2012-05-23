@@ -28,36 +28,17 @@ public class CmisProperties extends Properties {
     public CmisProperties(File file) throws IOException {
         super.load(new FileInputStream(file));
     }
-
-    @Override
-    public String getProperty(String key) {
-        String value = super.getProperty(key);
-        if(value != null) {
-            return value;
+    
+    public boolean isValid() {
+        if(getProperty(key_atompub_url) == null
+                || getProperty(key_user) == null
+                || getProperty(key_password) == null
+                || getProperty(key_path) == null
+                || getProperty(key_folders_to_create) == null
+                || getProperty(key_docs_to_create) == null) {
+            return false;
         }
-        
-        // value is null:
-        if(key_atompub_url.equals(key)) {
-            return default_atompub_url;
-        }
-        else if(key_user.equals(key)) {
-            return default_user;
-        }
-        else if(key_password.equals(key)) {
-            return default_password;
-        }
-        else if(key_path.equals(key)) {
-            return default_path;
-        }
-        else if(key_folders_to_create.equals(key)) {
-            return String.valueOf(default_folders_to_create);
-        }
-        else if(key_docs_to_create.equals(key)) {
-            return String.valueOf(default_docs_to_create);
-        }
-        else {
-            return value;
-        }
+        return true;
     }
     
     public String getAtompubUrl() {

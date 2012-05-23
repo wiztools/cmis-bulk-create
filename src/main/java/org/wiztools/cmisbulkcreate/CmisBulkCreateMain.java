@@ -43,6 +43,11 @@ public class CmisBulkCreateMain {
         }
         
         final CmisProperties props = new CmisProperties(new File(args[0]));
+        if(!props.isValid()) {
+            System.err.println("All required properties not found.");
+            printHelp(System.err);
+            System.exit(2);
+        }
         
         Map<String, String> parameter = new HashMap<String, String>();
 
