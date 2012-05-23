@@ -1,7 +1,6 @@
 package org.wiztools.cmisbulkcreate;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,20 +22,36 @@ import org.wiztools.commons.Charsets;
  */
 public class CmisBulkCreateMain {
     
-    private static final String atompub_url = "http://localhost:8080/alfresco/cmisatom";
-    private static final String user = "admin";
-    private static final String password = "admin";
-    private static final String path = "/MyFolder";
+    private static void printHelp(PrintStream out) {
+        out.println("Usage: java -jar cmis-bulk-create-NN-jar-with-dependencies.jar \\");
+        out.println("\t/path/to/config.properties");
+        out.println();
+        out.println("Sample `config.properties':");
+        out.println("\tatompub.url = " + CmisProperties.default_atompub_url);
+        out.println("\tuser = " + CmisProperties.default_user);
+        out.println("\tpassword = " + CmisProperties.default_password);
+        out.println("\tpath = " + CmisProperties.default_path);
+        out.println("\tfolders.to.create = " + CmisProperties.default_folders_to_create);
+        out.println("\tdocs.to.create = " + CmisProperties.default_docs_to_create);
+        out.println();
+    }
     
-    public static void main(String[] arg) throws IOException {
+    public static void main(String[] args) throws IOException {
+        if(args.length != 1) {
+            printHelp(System.err);
+            System.exit(1);
+        }
+        
+        final CmisProperties props = new CmisProperties(new File(args[0]));
+        
         Map<String, String> parameter = new HashMap<String, String>();
 
         // Set the user credentials
-        parameter.put(SessionParameter.USER, user);
-        parameter.put(SessionParameter.PASSWORD, password);
+        parameter.put(SessionParameter.USER, props.getUser());
+        parameter.put(SessionParameter.PASSWORD, props.getPassword());
 
         // Specify the connection settings
-        parameter.put(SessionParameter.ATOMPUB_URL, atompub_url);
+        parameter.put(SessionParameter.ATOMPUB_URL, props.getAtompubUrl());
         parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
 
         // Create a session
@@ -50,8 +65,8 @@ public class CmisBulkCreateMain {
         Session session = r.createSession();
         System.out.println("[Opened session to repository]");
         
-        Folder rootFolder = (Folder) session.getObjectByPath(path);
-        for(int i=0; i<2; i++) {
+        Folder rootFolder = (Folder) session.getObjectByPath(props.getPath());
+        for(int i=0; i<props.getFoldersToCreate(); i++) {
             // Create folder:
             final String folderName = "Folder-" + i;
             Map<String, String> folderProps = new HashMap<String, String>();
@@ -63,7 +78,7 @@ public class CmisBulkCreateMain {
             System.out.println("Created folder: " + folderName);
             
             // Create documents:
-            for(int j=0; j<2; j++) {
+            for(int j=0; j<props.getDocsToCreate(); j++) {
                 final String fileName = "doc-" + i + "." + j + ".txt";
                 Map<String, Object> docProps = new HashMap<String, Object>();
                 docProps.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document");
